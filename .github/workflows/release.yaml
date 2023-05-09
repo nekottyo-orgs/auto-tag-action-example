@@ -2,14 +2,19 @@ name: release
 
 on:
   workflow_call:
-    input:
+  push:
+    branches:
+      - main
+    tags:
+      - 'v*'
+  pull_request:
+    types:
+      - labeled
 
 jobs:
   release:
     if: github.event.action != 'labeled'
     runs-on: ubuntu-latest
-    env:
-      GOPATH: /home/runner/go
     steps:
       - uses: actions/checkout@v3
 
