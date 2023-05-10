@@ -52,3 +52,11 @@ jobs:
           body: ${{ steps.bumpr.outputs.message }}
           draft: false
           prerelease: false
+
+  release-check:
+    if: github.event.action == 'labeled'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Post bumpr status comment
+        uses: haya14busa/action-bumpr@v1.8
