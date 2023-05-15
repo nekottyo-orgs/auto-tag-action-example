@@ -45,6 +45,11 @@ jobs:
         with:
           fromTag: ${{ steps.bumpr.outputs.current_version }}
           toTag: ${{ steps.tag.outputs.result }}
+          configurationJson: |
+            {
+              "pr_template": "- ${{TITLE}} : ${{URL}}	by @${{AUTHOR}}"
+            }
+
 
       # Create release.
       - name: Release
