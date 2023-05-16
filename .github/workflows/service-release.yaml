@@ -3,15 +3,15 @@ name: service release
 on:
   workflow_call:
     inputs:
-      suffix:
-        description: 'Suffix for the release tag'
+      tag:
+        description: 'Tag for the release'
         type: string
         required: false
         default: ""
   workflow_dispatch:
     inputs:
-      suffix:
-        description: 'Suffix for the release tag'
+      tag:
+        description: 'Tag for the release'
         type: string
         required: false
         default: ""
