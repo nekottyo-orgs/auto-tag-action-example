@@ -31,6 +31,12 @@ jobs:
           exclude_types: "draft|prerelease"
           view_top: 1
 
+      - name: 'Get next minor version'
+        id: semvers
+        uses: "WyriHaximus/github-action-next-semvers@v1"
+        with:
+          version: ${{ steps.latest-release.outputs.tag_name }}
+
       # get latest prerelease
       - id: latest-prerelease
         uses: InsonusK/get-latest-release@v1.0.1
@@ -49,16 +55,14 @@ jobs:
         uses: haya14busa/action-cond@v1
         with:
           cond: "${{ steps.latest-release.outputs.tag_name != '' }}"
-          if_true: "${{ steps.latest-release.outputs.tag_name }}-${{ steps.datetime.outputs.value }}"
-          if_false: "v0.0.0-${{ steps.datetime.outputs.value }}"
-
+          if_true: "${{ steps.semvers.outputs.patch }}-${{ steps.datetime.outputs.value }}"
+          if_false: "v0.0.1-${{ steps.datetime.outputs.value }}"
 
       - uses: rickstaa/action-create-tag@v1
         id: "tag_create"
         with:
           tag: ${{ steps.cond.outputs.value }}
           tag_exists_error: false
-
 
       # https://github.com/mikepenz/release-changelog-builder-action#configuration
       - name: Build Changelog
@@ -83,7 +87,6 @@ jobs:
                 }
               ]
             }
-
 
       # Create release.
       - name: Release
