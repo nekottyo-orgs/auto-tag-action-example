@@ -34,12 +34,14 @@ jobs:
       # Get tag name.
       - id: tag
         uses: haya14busa/action-cond@v1.1.1
+        if: "!steps.bumpr.outputs.skip"
         with:
           cond: "${{ startsWith(github.ref, 'refs/tags/') }}"
           if_true: ${{ github.ref }}
           if_false: ${{ steps.bumpr.outputs.next_version }}
 
       - name: Build Changelog
+        if: "!steps.bumpr.outputs.skip"
         id: build_changelog
         uses: mikepenz/release-changelog-builder-action@v3
         with:
@@ -64,6 +66,7 @@ jobs:
 
       # Create release.
       - name: Release
+        if: "!steps.bumpr.outputs.skip"
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ steps.tag.outputs.value }}
