@@ -47,7 +47,17 @@ jobs:
           toTag: ${{ steps.tag.outputs.result }}
           configurationJson: |
             {
-              "pr_template": "- #{{TITLE}} : #{{URL}} by #{{AUTHOR}}"
+              "template": "#{{CHANGELOG}}\n\n<details>\n<summary>Uncategorized</summary>\n\n#{{UNCATEGORIZED}}\n</details>",
+              "categories": [
+                {
+                    "title": "## 💬 Other",
+                    "labels": ["other"]
+                },
+                {
+                    "title": "## 📦 Dependencies",
+                    "labels": ["dependencies"]
+                }
+              ]
             }
 
 
