@@ -47,6 +47,7 @@ jobs:
         with:
           fromTag: ${{ steps.bumpr.outputs.current_version }}
           toTag: ${{ steps.tag.outputs.result }}
+          ignorePreReleases: true
           configurationJson: |
             {
               "template": "#{{CHANGELOG}}\n\n## Uncategorized\n\n#{{UNCATEGORIZED}}",
