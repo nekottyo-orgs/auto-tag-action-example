@@ -40,6 +40,7 @@ jobs:
           if_true: ${{ github.ref }}
           if_false: ${{ steps.bumpr.outputs.next_version }}
 
+      # https://github.com/mikepenz/release-changelog-builder-action#configuration
       - name: Build Changelog
         if: "!steps.bumpr.outputs.skip"
         id: build_changelog
