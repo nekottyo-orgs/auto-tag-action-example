@@ -1,0 +1,91 @@
+name: service release
+
+on:
+  workflow_call:
+    inputs:
+      suffix:
+        description: 'Suffix for the release tag'
+        required: false
+        default: ""
+  workflow_dispatch:
+    inputs:
+      suffix:
+        description: 'Suffix for the release tag'
+        required: false
+        default: ""
+
+jobs:
+  release:
+    if: github.event.action != 'labeled'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      # get latest tag
+      - id: latest-release
+        uses: InsonusK/get-latest-release@v1.0.1
+        with:
+          myToken: ${{ github.token }}
+          exclude_types: "draft|prerelease"
+          view_top: 1
+
+      # get latest prerelease
+      - id: latest-prerelease
+        uses: InsonusK/get-latest-release@v1.0.1
+        with:
+          myToken: ${{ github.token }}
+          exclude_types: "draft|release"
+          view_top: 1
+
+      - name: Get current datetime
+        id: datetime
+        run: echo "value=$(date +'%Y%m%d-%H%M%S')" >> $GITHUB_OUTPUT
+
+      - id: cond
+        uses: haya14busa/action-cond@v1
+        with:
+          cond: "${{ steps.latest-release.outputs.tag_name != '' }}"
+          if_true: "${{ steps.latest-release.outputs.tag_name }}-${{ steps.datetime.outputs.value }}"
+          if_false: "v0.0.0-${{ steps.datetime.outputs.value }}"
+
+
+      - uses: rickstaa/action-create-tag@v1
+        id: "tag_create"
+        with:
+          tag: ${{ steps.cond.outputs.value }}
+          tag_exists_error: false
+
+
+      # https://github.com/mikepenz/release-changelog-builder-action#configuration
+      - name: Build Changelog
+        if: "!steps.bumpr.outputs.skip"
+        id: build_changelog
+        uses: mikepenz/release-changelog-builder-action@v3
+        with:
+          fromTag: ${{ steps.latest-prerelease.outputs.tag_name }}
+          toTag: ${{ steps.cond.outputs.value }}
+          ignorePreReleases: false
+          configurationJson: |
+            {
+              "template": "#{{CHANGELOG}}\n\n## Uncategorized\n\n#{{UNCATEGORIZED}}",
+              "pr_template": "- #{{TITLE}} : #{{URL}} by @#{{AUTHOR}}",
+              "categories": [
+                {
+                    "title": "## 💬 Other",
+                    "labels": ["other"]
+                },
+                {
+                    "title": "## 📦 Dependencies",
+                    "labels": ["dependencies"]
+                }
+              ]
+            }
+
+
+      # Create release.
+      - name: Release
+        if: "!steps.bumpr.outputs.skip"
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ steps.cond.outputs.value }}
+          body: ${{ steps.build_changelog.outputs.changelog }}
