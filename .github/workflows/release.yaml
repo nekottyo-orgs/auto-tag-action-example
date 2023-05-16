@@ -47,7 +47,7 @@ jobs:
           toTag: ${{ steps.tag.outputs.result }}
           configurationJson: |
             {
-              "pr_template": "- {{TITLE}} : {{URL}} by @{{AUTHOR}}",
+              "pr_template": "- ${{ ${{TITLE}} }} : ${{ ${{URL}} }} by @${{ ${{AUTHOR}} }}",
             }
 
 
