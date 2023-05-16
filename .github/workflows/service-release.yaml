@@ -60,7 +60,6 @@ jobs:
 
       # https://github.com/mikepenz/release-changelog-builder-action#configuration
       - name: Build Changelog
-        if: "!steps.bumpr.outputs.skip"
         id: build_changelog
         uses: mikepenz/release-changelog-builder-action@v3
         with:
@@ -86,8 +85,8 @@ jobs:
 
       # Create release.
       - name: Release
-        if: "!steps.bumpr.outputs.skip"
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ steps.cond.outputs.value }}
           body: ${{ steps.build_changelog.outputs.changelog }}
+          prerelease: true
