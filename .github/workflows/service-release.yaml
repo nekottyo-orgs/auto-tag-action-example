@@ -42,6 +42,8 @@ jobs:
       - name: Get current datetime
         id: datetime
         run: echo "value=$(date +'%Y%m%d-%H%M%S')" >> $GITHUB_OUTPUT
+        env:
+          TZ: Asia/Tokyo
 
       - id: cond
         uses: haya14busa/action-cond@v1
