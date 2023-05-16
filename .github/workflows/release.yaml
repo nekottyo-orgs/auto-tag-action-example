@@ -47,8 +47,8 @@ jobs:
           toTag: ${{ steps.tag.outputs.result }}
           configurationJson: |
             {
-              "template": "#{{CHANGELOG}}\n\n<details>\n<summary>Uncategorized</summary>\n\n#{{UNCATEGORIZED}}\n</details>",
-              "pr_template": "- #{{TITLE}} : #{{URL}} by #{{AUTHOR}}",
+              "template": "#{{CHANGELOG}}\n\n## Uncategorized\n\n#{{UNCATEGORIZED}}",
+              "pr_template": "- #{{TITLE}} : #{{URL}} by @#{{AUTHOR}}",
               "categories": [
                 {
                     "title": "## 💬 Other",
