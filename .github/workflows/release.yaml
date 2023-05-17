@@ -2,6 +2,26 @@ name: release
 
 on:
   workflow_call:
+    inputs:
+      changelogConfigurationJson:
+        description: 'Configuration for changelog builder'
+        type: string
+        required: false
+        default: |
+            {
+              "template": "#{{CHANGELOG}}\n\n## Uncategorized\n\n#{{UNCATEGORIZED}}",
+              "pr_template": "- #{{TITLE}} : #{{URL}} by @#{{AUTHOR}}",
+              "categories": [
+                {
+                    "title": "## 💬 Other",
+                    "labels": ["other"]
+                },
+                {
+                    "title": "## 📦 Dependencies",
+                    "labels": ["dependencies"]
+                }
+              ]
+            }
   push:
     branches:
       - main
@@ -49,21 +69,7 @@ jobs:
           fromTag: ${{ steps.bumpr.outputs.current_version }}
           toTag: ${{ steps.tag.outputs.result }}
           ignorePreReleases: true
-          configurationJson: |
-            {
-              "template": "#{{CHANGELOG}}\n\n## Uncategorized\n\n#{{UNCATEGORIZED}}",
-              "pr_template": "- #{{TITLE}} : #{{URL}} by @#{{AUTHOR}}",
-              "categories": [
-                {
-                    "title": "## 💬 Other",
-                    "labels": ["other"]
-                },
-                {
-                    "title": "## 📦 Dependencies",
-                    "labels": ["dependencies"]
-                }
-              ]
-            }
+          configurationJson: ${{ inputs.changelogConfigurationJson }}
 
 
       # Create release.

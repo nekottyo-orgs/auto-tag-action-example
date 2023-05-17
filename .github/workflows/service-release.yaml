@@ -8,6 +8,27 @@ on:
         type: string
         required: false
         default: ""
+      changelogConfigurationJson:
+        description: 'Configuration for changelog builder'
+        type: string
+        required: false
+        default: |
+            {
+              "template": "#{{CHANGELOG}}\n\n## Uncategorized\n\n#{{UNCATEGORIZED}}",
+              "pr_template": "- #{{TITLE}} : #{{URL}} by @#{{AUTHOR}}",
+              "categories": [
+                {
+                    "title": "## 💬 Other",
+                    "labels": ["other"]
+                },
+                {
+                    "title": "## 📦 Dependencies",
+                    "labels": ["dependencies"]
+                }
+              ]
+            }
+
+
   workflow_dispatch:
     inputs:
       tag:
@@ -29,7 +50,6 @@ jobs:
         with:
           myToken: ${{ github.token }}
           exclude_types: "draft|prerelease"
-          view_top: 100
 
       - name: 'Get next minor version'
         id: semvers
@@ -43,7 +63,6 @@ jobs:
         with:
           myToken: ${{ github.token }}
           exclude_types: "draft|release"
-          view_top: 1
 
       - name: Get current datetime
         id: datetime
@@ -72,21 +91,7 @@ jobs:
           fromTag: ${{ steps.latest-prerelease.outputs.tag_name }}
           toTag: ${{ steps.cond.outputs.value }}
           ignorePreReleases: false
-          configurationJson: |
-            {
-              "template": "#{{CHANGELOG}}\n\n## Uncategorized\n\n#{{UNCATEGORIZED}}",
-              "pr_template": "- #{{TITLE}} : #{{URL}} by @#{{AUTHOR}}",
-              "categories": [
-                {
-                    "title": "## 💬 Other",
-                    "labels": ["other"]
-                },
-                {
-                    "title": "## 📦 Dependencies",
-                    "labels": ["dependencies"]
-                }
-              ]
-            }
+          configurationJson: ${{ inputs.changelogConfigurationJson }}
 
       # Create release.
       - name: Release
