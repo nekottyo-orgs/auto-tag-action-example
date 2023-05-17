@@ -55,7 +55,7 @@ jobs:
         uses: haya14busa/action-cond@v1
         with:
           cond: "${{ steps.latest-release.outputs.tag_name != '' }}"
-          if_true: "${{ steps.semvers.outputs.patch }}-${{ steps.datetime.outputs.value }}"
+          if_true: "${{ steps.semvers.outputs.v_patch }}-${{ steps.datetime.outputs.value }}"
           if_false: "v0.0.1-${{ steps.datetime.outputs.value }}"
 
       - uses: rickstaa/action-create-tag@v1
