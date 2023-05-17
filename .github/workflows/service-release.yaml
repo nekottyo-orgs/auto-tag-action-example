@@ -29,7 +29,7 @@ jobs:
         with:
           myToken: ${{ github.token }}
           exclude_types: "draft|prerelease"
-          view_top: 1
+          view_top: 100
 
       - name: 'Get next minor version'
         id: semvers
