@@ -37,6 +37,7 @@ on:
         required: false
         default: ""
 
+permissions: write-all
 jobs:
   release:
     if: github.event.action != 'labeled'

@@ -1,5 +1,6 @@
 name: reviewdog
 on: [pull_request]
+permissions: write-all
 jobs:
   actionlint:
     runs-on: ubuntu-latest

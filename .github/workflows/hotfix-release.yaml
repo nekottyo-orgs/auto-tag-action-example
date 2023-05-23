@@ -13,6 +13,10 @@ on:
         required: true
         type: string
 
+permissions:
+  contents: write
+  pull-requests: write
+
 jobs:
   create-hotfix-branch:
     runs-on: ubuntu-latest
@@ -26,12 +30,15 @@ jobs:
       - name: Create hotfix branch
         run: |
           git checkout -b hotfix/${{ github.event.inputs.target_release }}-${{ github.event.inputs.name }} ${{ github.event.inputs.target_release }}
+          git commit --allow-empty -m 'hotfix: ${{ github.event.inputs.name }}'
           git push origin hotfix/${{ github.event.inputs.target_release }}-${{ github.event.inputs.name }}
-      - name: Create pull-request
-        run: |
-          git commit --allow-empty -m 'dummy: ${{ github.event.inputs.name }} about ${{ github.event.inputs.target_release }}'
-          gh pr create \
-            --assignee ${{ github.event.actor }} \
-            --label 'hotfix' \
-            --title 'Hotfix: ${{ inputs.name }} about ${{ inputs.target_release }}' \
-            --body 'target release: https://github.com/${{ github.event.repository}}releases/tag/${{ inputs.target_release }}'
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          title: 'hotfix: ${{ github.event.inputs.name }} about ${{ github.event.inputs.target_release }}'
+          body: 'hotfix: https::/github.com/${{ github.repository }}/releases/tag/${{ github.event.inputs.target_release }}'
+          # draft: false
+          # branch: hotfix/${{ github.event.inputs.target_release }}-${{ github.event.inputs.name }}
+          # base: ${{ github.event.inputs.target_release }}
