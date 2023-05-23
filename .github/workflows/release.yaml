@@ -7,7 +7,7 @@ on:
         description: 'Bump level'
         required: true
         type: string
-      changelogConfigurationJson: &changelogConfigurationJson
+      changelogConfigurationJson:
         description: 'Configuration for changelog builder'
         type: string
         required: false
