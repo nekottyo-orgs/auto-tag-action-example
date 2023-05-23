@@ -20,7 +20,7 @@ jobs:
         id: regex-match
         with:
           text: ${{ inputs.branch }}
-          regex: '^/hotfix\/(.*?)$'
+          regex: '^hotfix\/(.*?)$'
 
   hotfix-release:
     needs: parse
