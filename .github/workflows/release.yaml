@@ -79,7 +79,6 @@ jobs:
 
       # https://github.com/mikepenz/release-changelog-builder-action#configuration
       - name: Build Changelog
-        if: "!steps.bumpr.outputs.skip || startsWith(github.ref, 'refs/tags/')"
         id: build_changelog
         uses: mikepenz/release-changelog-builder-action@v3
         with:
@@ -91,7 +90,6 @@ jobs:
 
       # Create release.
       - name: Release
-        if: "!steps.bumpr.outputs.skip || startsWith(github.ref, 'refs/tags/')"
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ steps.tag.outputs.value }}
