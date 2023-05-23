@@ -74,7 +74,7 @@ jobs:
 
       - name: Get current datetime
         id: datetime
-        run: echo "value=$(date +'%Y%m%d-%H%M%S')" >> $GITHUB_OUTPUT
+        run: echo "value=$(date +'%Y%m%d-%H%M%S')" >> "${GITHUB_OUTPUT}"
         env:
           TZ: Asia/Tokyo
 

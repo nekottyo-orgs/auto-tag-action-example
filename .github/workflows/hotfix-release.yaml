@@ -9,8 +9,10 @@ on:
         type: string
 
 jobs:
-  hotfix-release:
+  parse:
     runs-on: ubuntu-latest
+    outputs:
+      regex-match: ${{ steps.regex-match.outputs.group1 }}
     steps:
       - uses: actions/checkout@v3
 
@@ -20,7 +22,9 @@ jobs:
           text: ${{ inputs.branch }}
           regex: '^/hotfix\/(.*?)$'
 
-      - uses: ./.github/workflows/service-release.yaml
-        with:
-          ref: ${{ github.event.inputs.branch }}
-          tag: ${{ steps.regex-match.outputs.group1 }}
+  hotfix-release:
+    needs: parse
+    uses: ./.github/workflows/service-release.yaml
+    with:
+      ref: ${{ github.event.inputs.branch }}
+      tag: ${{ needs.parse.outputs.regex-match }}
