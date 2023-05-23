@@ -32,12 +32,8 @@ jobs:
           git commit --allow-empty -m 'hotfix: ${{ github.event.inputs.name }}'
           git push origin hotfix/${{ github.event.inputs.target_release }}-${{ github.event.inputs.name }}
 
-      - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v5
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          title: 'hotfix: ${{ github.event.inputs.name }} about ${{ github.event.inputs.target_release }}'
-          body: 'hotfix: https::/github.com/${{ github.repository }}/releases/tag/${{ github.event.inputs.target_release }}'
-          # draft: false
-          # branch: hotfix/${{ github.event.inputs.target_release }}-${{ github.event.inputs.name }}
-          # base: ${{ github.event.inputs.target_release }}
+      - runs: |
+          gh pr create \
+            --title "hotfix: ${{ github.event.inputs.name }} about ${{ github.event.inputs.target_release }}" \
+            --body "target release: https::/github.com/${{ github.repository }}/releases/tag/${{ github.event.inputs.target_release }}" \
+            --assignee ${{ github.actor }}
