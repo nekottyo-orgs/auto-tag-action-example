@@ -32,7 +32,7 @@ jobs:
           git commit --allow-empty -m 'hotfix: ${{ github.event.inputs.name }}'
           git push origin hotfix/${{ github.event.inputs.target_release }}-${{ github.event.inputs.name }}
 
-      - runs: |
+      - run: |
           gh pr create \
             --title "hotfix: ${{ github.event.inputs.name }} about ${{ github.event.inputs.target_release }}" \
             --body "target release: https::/github.com/${{ github.repository }}/releases/tag/${{ github.event.inputs.target_release }}" \
