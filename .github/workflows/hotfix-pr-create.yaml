@@ -1,0 +1,41 @@
+name: Create Hotfix Branch
+
+on:
+  workflow_call:
+  workflow_dispatch:
+    inputs:
+      target_release:
+        description: 'Target release name'
+        required: true
+        type: string
+      name:
+        description: 'Hotfix Name'
+        required: true
+        type: string
+
+jobs:
+  create-hotfix-branch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.inputs.target_release }}
+          token: ${{ secrets.PAT }}
+          fetch-depth: 0
+
+      - name: Create hotfix branch
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git checkout -b hotfix/${{ github.event.inputs.target_release }}-${{ github.event.inputs.name }} ${{ github.event.inputs.target_release }}
+          git commit --allow-empty -m 'hotfix: ${{ github.event.inputs.name }}'
+          git push origin hotfix/${{ github.event.inputs.target_release }}-${{ github.event.inputs.name }}
+
+      - run: |
+          gh pr create \
+            --title "hotfix: ${{ github.event.inputs.name }} about ${{ github.event.inputs.target_release }}" \
+            --body "target release: https://github.com/${{ github.repository }}/releases/tag/${{ github.event.inputs.target_release }}" \
+            --assignee ${{ github.actor }}
+        env:
+          GH_TOKEN: ${{ secrets.PAT }}

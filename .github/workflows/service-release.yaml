@@ -8,6 +8,11 @@ on:
         type: string
         required: false
         default: ""
+      ref:
+        description: 'Ref for the release'
+        type: string
+        required: false
+        default: "main"
       changelogConfigurationJson:
         description: 'Configuration for changelog builder'
         type: string
@@ -28,7 +33,6 @@ on:
               ]
             }
 
-
   workflow_dispatch:
     inputs:
       tag:
@@ -44,6 +48,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+        with:
+          ref: ${{ inputs.ref }}
+          fetch-depth: 0
 
       # get latest tag
       - id: latest-release
@@ -78,10 +85,17 @@ jobs:
           if_true: "${{ steps.semvers.outputs.v_patch }}-${{ steps.datetime.outputs.value }}"
           if_false: "v0.0.1-${{ steps.datetime.outputs.value }}"
 
+      - id: tag
+        uses: haya14busa/action-cond@v1
+        with:
+          cond: "${{ inputs.tag != '' }}"
+          if_true: "${{ inputs.tag }}"
+          if_false: "${{ steps.cond.outputs.value }}"
+
       - uses: rickstaa/action-create-tag@v1
         id: "tag_create"
         with:
-          tag: ${{ steps.cond.outputs.value }}
+          tag: ${{ steps.tag.outputs.value }}
           tag_exists_error: false
 
       # https://github.com/mikepenz/release-changelog-builder-action#configuration
@@ -90,7 +104,7 @@ jobs:
         uses: mikepenz/release-changelog-builder-action@v3
         with:
           fromTag: ${{ steps.latest-prerelease.outputs.tag_name }}
-          toTag: ${{ steps.cond.outputs.value }}
+          toTag: ${{ steps.tag.outputs.value }}
           ignorePreReleases: false
           configurationJson: ${{ inputs.changelogConfigurationJson }}
 
@@ -98,6 +112,6 @@ jobs:
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ steps.cond.outputs.value }}
+          tag_name: ${{ steps.tag.outputs.value }}
           body: ${{ steps.build_changelog.outputs.changelog }}
           prerelease: true
