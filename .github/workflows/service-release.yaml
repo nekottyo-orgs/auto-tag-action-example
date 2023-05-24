@@ -13,6 +13,11 @@ on:
         type: string
         required: false
         default: "main"
+      base-release:
+        description: 'Base release for the release'
+        type: string
+        required: false
+        default: ""
       changelogConfigurationJson:
         description: 'Configuration for changelog builder'
         type: string
@@ -92,6 +97,13 @@ jobs:
           if_true: "${{ inputs.tag }}"
           if_false: "${{ steps.cond.outputs.value }}"
 
+      - id: fromTag
+        uses: haya14busa/action-cond@v1
+        with:
+          cond: "${{ inputs.base-release != '' }}"
+          if_true: "${{ inputs.base-release }}"
+          if_false: "${{ steps.latest-prerelease.outputs.tag_name }}"
+
       - uses: rickstaa/action-create-tag@v1
         id: "tag_create"
         with:
@@ -103,10 +115,11 @@ jobs:
         id: build_changelog
         uses: mikepenz/release-changelog-builder-action@v3
         with:
-          fromTag: ${{ steps.latest-prerelease.outputs.tag_name }}
+          fromTag: ${{ steps.fromTag.outputs.value }}
           toTag: ${{ steps.tag.outputs.value }}
           ignorePreReleases: false
           configurationJson: ${{ inputs.changelogConfigurationJson }}
+          includeOpen: true
 
       # Create release.
       - name: Release

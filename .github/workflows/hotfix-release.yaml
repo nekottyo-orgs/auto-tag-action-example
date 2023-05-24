@@ -12,7 +12,8 @@ jobs:
   parse:
     runs-on: ubuntu-latest
     outputs:
-      regex-match: ${{ steps.regex-match.outputs.group1 }}
+      tag: "${{ steps.regex-match.outputs.group1 }}${{ steps.regex-match.outputs.group2 }}"
+      base-release: "${{ steps.regex-match.outputs.group1 }}"
     steps:
       - uses: actions/checkout@v3
 
@@ -20,11 +21,13 @@ jobs:
         id: regex-match
         with:
           text: ${{ inputs.branch }}
-          regex: '^hotfix\/(.*?)$'
+          regex: '^hotfix\/(v.*\.*\.*-[0-9]+-[0-9]+)(.*)$'
+
 
   hotfix-release:
     needs: parse
     uses: ./.github/workflows/service-release.yaml
     with:
       ref: ${{ github.event.inputs.branch }}
-      tag: ${{ needs.parse.outputs.regex-match }}
+      tag: ${{ needs.parse.outputs.tag }}
+      base-release: ${{ needs.parse.outputs.base-release }}
